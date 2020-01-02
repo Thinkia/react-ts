@@ -3,8 +3,8 @@ import * as ReactDOM from 'react-dom';
 
 import { List } from './components/List';
 
-const task = ['001','002','003'];
-const describe = ['任务一', '任务二','任务三'];
+const task = '任务';
+const describe = '描述';
 
 
 ReactDOM.render(
