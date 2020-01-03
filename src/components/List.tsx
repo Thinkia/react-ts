@@ -1,8 +1,10 @@
 import * as React from 'react';
 
-export interface ListProps { 
-    task: string;
-    describe: string; 
+export interface ListProps {
+    obj: {task: string, describe: string,plan : string};
+    key: string;
+    allObj : {task: string, describe: string,plan:string}[];
+    changeObj:  (obj?:{}[],done?:boolean, plan?:string)=>void;
 }
 
 /**
@@ -14,15 +16,15 @@ export interface ListProps {
    react & typescript : https://www.typescriptlang.org/docs/handbook/react-&-webpack.html
  * 
  */
-export class List extends React.Component<ListProps, {value: string }> {
-    constructor(props : Readonly<ListProps>) {
+export class List extends React.PureComponent<ListProps, { value: string,doneAll:boolean }> {
+    constructor(props: Readonly<ListProps>) {
         super(props);
         /**
          *  创建阶段  
          *  使用 this.state 来初始化 state
             给事件处理函数绑定 this
-         *  */ 
-        this.state = {value: '123'};
+         *  */
+        this.state = { value: 'todo',doneAll: false };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -31,23 +33,24 @@ export class List extends React.Component<ListProps, {value: string }> {
 
     //挂载 -- 大部分情况下都推荐把异步数据请求放在 componentDidMount() 中
     componentDidMount() {
- 
+
         console.log('DidMount: 挂载 ');
     }
 
     //更新阶段  从 props 中获取 state  
-    static getDerivedStateFromProps(nextProps : ListProps, prevState : {value: string}) {
+    static getDerivedStateFromProps(_nextProps: ListProps, prevState: { value: string }) {
         console.log('getDerivedStateFromProps: 从 props 中获取 state ')
-        console.log(prevState.value) ;
+        console.log(prevState.value);
         return true
     }
-    
+
 
     // todo 更新阶段 -- 判断是否需要重绘  ？ 类型
-    shouldComponentUpdate():any{
-        console.log('shouldComponentUpdate: 判断是否需要重绘')
-        return true
-    }
+    // shouldComponentUpdate(_prevProps: ListProps, _prevState: { value: string }): any {
+    //     console.log('shouldComponentUpdate: 判断是否需要重绘')
+
+    //     return true
+    // }
 
     // todo 更新阶段 -- 获取快照？
     /**
@@ -55,15 +58,16 @@ export class List extends React.Component<ListProps, {value: string }> {
      * 返回值称为一个快照（snapshot），如果不需要 snapshot，则必须显示的返回 null 
      * —— 因为返回值将作为 componentDidUpdate() 的第三个参数使用。所以这个函数必须要配合 componentDidUpdate() 一起使用。
      */
-    getSnapshotBeforeUpdate(prevProps:ListProps, prevState : {}) {
+    getSnapshotBeforeUpdate(_prevProps: ListProps, _prevState: {}) {
         console.log('getSnapshotBeforeUpdate : 获取快照？ ')
         return true
     }
 
     // 更新完成
-    componentDidUpdate() {
+    componentDidUpdate(_prevProps: ListProps, _prevState: {}, _snapshot: any) {
         console.log('componentDidUpdate:  更新完成')
-        console.log(this.state.value) ;
+    
+     
     }
 
     //卸载阶段 即将卸载
@@ -80,15 +84,47 @@ export class List extends React.Component<ListProps, {value: string }> {
         console.log('componentDidCatch: 捕获错误并进行处理')
     }
 
-    // todo  event 类型是什么？
-    handleChange(event: any ) {
-        this.setState({value: event.target.value});
-        console.log(this.state.value) ;
+    //  删除  mainState 元素
+    handleChange(event: any) {
+        const allObj = this.props.allObj
+        let changeObj:{}[];
+        allObj.map(p =>{
+            if(event.target.value == p.task) changeObj = this.removeElement(allObj,p);
+        })
+        this.props.changeObj(changeObj)
     }
-    handleSubmit(event : any) {
+
+    // 删除元素
+    removeElement(obj: {task:string}[], value:{task: string}) {
+        let changeObj: {}[] = [];
+        obj.forEach(child =>{
+            if(child.task !== value.task) changeObj.push(child)
+        })
+        return changeObj ;
+    }
+
+    changeElement(obj: {task:string,describe:string,plan:string}[], value: string,plan:string) {
+        obj.forEach(child =>{
+            if(child.task == value) child.plan = plan;
+        })
+        return obj
+    }
+    handleSubmit(event: any) {
+     
         console.log('submit');
+    
+        if (this.props.obj.plan !== event.target.value){
+            this.props.changeObj(this.changeElement( this.props.allObj, this.props.obj.task,event.target.value))
+            this.setState({value: event.target.value})
+        }
+            
         event.preventDefault();
     }
+
+    doneAll(){
+        this.setState({value: 'done'})
+    }
+
 
     /**
      *  可返回类型
@@ -101,12 +137,23 @@ export class List extends React.Component<ListProps, {value: string }> {
      * 
      */
     render() {
-
-        return (
-            <ul >
-            <label>{this.props.task}</label>
-            <input value={this.state.value} onChange = {this.handleChange}></input>
-           </ul>
-        );
+        // let plan;
+        // this.props.allObj.forEach(child => {
+        //     if(child.task === this.props.obj.task) plan = child.plan
+        // });
+            return (
+                <tr>
+                    <td>{this.props.obj.task}</td>
+                    <td>{this.props.obj.describe}</td>
+                    <td>{this.state.value }</td>
+                    <td>
+                        <button onClick={this.handleSubmit} value="done" >done</button>
+                        <button onClick={this.handleSubmit} value="doing" >doing</button>
+                        <button onClick={this.handleSubmit} value="todo" >todo</button>
+                        <button onClick={this.handleChange} value={this.props.obj.task} >delete</button>
+                    </td>
+                </tr>
+            );
+     
     }
 }
