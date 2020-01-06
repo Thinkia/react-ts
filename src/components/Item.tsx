@@ -1,10 +1,9 @@
 import * as React from 'react';
 
-export interface ListProps {
-    obj: {task: string, describe: string,plan : string};
-    key: string;
-    allObj : {task: string, describe: string,plan:string}[];
-    changeObj:  (obj?:{}[],done?:boolean, plan?:string)=>void;
+export interface ItemProps {
+    object: {task: string, describe: string,stage : string};
+    delObject:  (task: string)=>void;
+    setStage: (task: string, stage: string) =>void
 }
 
 /**
@@ -16,17 +15,17 @@ export interface ListProps {
    react & typescript : https://www.typescriptlang.org/docs/handbook/react-&-webpack.html
  * 
  */
-export class List extends React.PureComponent<ListProps, { value: string,doneAll:boolean }> {
-    constructor(props: Readonly<ListProps>) {
+export class Item extends React.PureComponent<ItemProps, { stage: string}> {
+    constructor(props: Readonly<ItemProps>) {
         super(props);
         /**
          *  创建阶段  
          *  使用 this.state 来初始化 state
             给事件处理函数绑定 this
          *  */
-        this.state = { value: 'todo',doneAll: false };
+        this.state = { stage: this.props.object.stage};
         this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.setStage = this.setStage.bind(this);
     }
 
     // 生命周期理解测试 3h  ：  https://segmentfault.com/a/1190000020348448
@@ -38,9 +37,8 @@ export class List extends React.PureComponent<ListProps, { value: string,doneAll
     }
 
     //更新阶段  从 props 中获取 state  
-    static getDerivedStateFromProps(_nextProps: ListProps, prevState: { value: string }) {
+    static getDerivedStateFromProps(_nextProps: ItemProps, prevState: { value: string }) {
         console.log('getDerivedStateFromProps: 从 props 中获取 state ')
-        console.log(prevState.value);
         return true
     }
 
@@ -58,13 +56,13 @@ export class List extends React.PureComponent<ListProps, { value: string,doneAll
      * 返回值称为一个快照（snapshot），如果不需要 snapshot，则必须显示的返回 null 
      * —— 因为返回值将作为 componentDidUpdate() 的第三个参数使用。所以这个函数必须要配合 componentDidUpdate() 一起使用。
      */
-    getSnapshotBeforeUpdate(_prevProps: ListProps, _prevState: {}) {
+    getSnapshotBeforeUpdate(_prevProps: ItemProps, _prevState: {}) {
         console.log('getSnapshotBeforeUpdate : 获取快照？ ')
         return true
     }
 
     // 更新完成
-    componentDidUpdate(_prevProps: ListProps, _prevState: {}, _snapshot: any) {
+    componentDidUpdate(_prevProps: ItemProps, _prevState: {}, _snapshot: any) {
         console.log('componentDidUpdate:  更新完成')
     
      
@@ -84,45 +82,18 @@ export class List extends React.PureComponent<ListProps, { value: string,doneAll
         console.log('componentDidCatch: 捕获错误并进行处理')
     }
 
-    //  删除  mainState 元素
+    //  删除  当前item  object
     handleChange(event: any) {
-        const allObj = this.props.allObj
-        let changeObj:{}[];
-        allObj.map(p =>{
-            if(event.target.value == p.task) changeObj = this.removeElement(allObj,p);
-        })
-        this.props.changeObj(changeObj)
+        this.props.delObject(this.props.object.task)
     }
 
-    // 删除元素
-    removeElement(obj: {task:string}[], value:{task: string}) {
-        let changeObj: {}[] = [];
-        obj.forEach(child =>{
-            if(child.task !== value.task) changeObj.push(child)
-        })
-        return changeObj ;
-    }
 
-    changeElement(obj: {task:string,describe:string,plan:string}[], value: string,plan:string) {
-        obj.forEach(child =>{
-            if(child.task == value) child.plan = plan;
-        })
-        return obj
-    }
-    handleSubmit(event: any) {
-     
-        console.log('submit');
-    
-        if (this.props.obj.plan !== event.target.value){
-            this.props.changeObj(this.changeElement( this.props.allObj, this.props.obj.task,event.target.value))
-            this.setState({value: event.target.value})
-        }
-            
+    // 
+    setStage(event: any) {
+        this.props.setStage(this.props.object.task,event.target.value)    
+        // this.props.object.stage = event.target.value
+        // this.setState({stage: event.target.value}) 
         event.preventDefault();
-    }
-
-    doneAll(){
-        this.setState({value: 'done'})
     }
 
 
@@ -137,20 +108,17 @@ export class List extends React.PureComponent<ListProps, { value: string,doneAll
      * 
      */
     render() {
-        // let plan;
-        // this.props.allObj.forEach(child => {
-        //     if(child.task === this.props.obj.task) plan = child.plan
-        // });
+
             return (
                 <tr>
-                    <td>{this.props.obj.task}</td>
-                    <td>{this.props.obj.describe}</td>
-                    <td>{this.state.value }</td>
+                    <td>{this.props.object.task}</td>
+                    <td>{this.props.object.describe}</td>
+                    <td>{this.props.object.stage}</td>
                     <td>
-                        <button onClick={this.handleSubmit} value="done" >done</button>
-                        <button onClick={this.handleSubmit} value="doing" >doing</button>
-                        <button onClick={this.handleSubmit} value="todo" >todo</button>
-                        <button onClick={this.handleChange} value={this.props.obj.task} >delete</button>
+                        <button onClick={this.setStage} value="done" >done</button>
+                        <button onClick={this.setStage} value="doing" >doing</button>
+                        <button onClick={this.setStage} value="todo" >todo</button>
+                        <button onClick={this.handleChange} >delete</button>
                     </td>
                 </tr>
             );

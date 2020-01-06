@@ -1,30 +1,28 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { List } from './components/List';
+import { Item } from './components/Item';
 
 interface itemData {
-    obj: {
+    objects: {
         task: string,
-        describe: string;
-        plan: string
+        describe: string,
+        stage: string,
     }[];
     number: number;
-    done: boolean;
 }
 
 
-class Render extends React.Component<{}, itemData> {
+class List extends React.Component<{}, itemData> {
     constructor(props: {}) {
         super(props);
-        this.state = { obj: [{ task: 'test', describe: 'test', plan: 'todo' }], number: 0, done: false }
+        this.state = { objects: [{ task: 'task0', describe: 'describe0', stage: 'todo' }], number: 1 }
         this.addElement = this.addElement.bind(this)
         this.doneAll = this.doneAll.bind(this)
     }
 
     // 挂载完成
     componentDidMount() {
-
         // 启服务
         // let url = './test.json'
         // fetch(url)
@@ -37,7 +35,19 @@ class Render extends React.Component<{}, itemData> {
         //         console.log(error)
         //     }
         // )
+    }
 
+    // 克隆当前 objects
+    objectsClone() {
+        const allObj = this.state.objects
+        let changeObj:{task: string, describe: string,stage:string}[] = [];
+        for (let i=0; i< allObj.length; i++){
+            changeObj[i] ={
+                task: allObj[i].task, 
+                describe:allObj[i].describe,
+                stage: allObj[i].stage}
+        }
+        return changeObj;
     }
 
     // 更新完成
@@ -45,47 +55,92 @@ class Render extends React.Component<{}, itemData> {
         console.log('componentDidUpdate:  更新完成')
     }
 
+    // 增加一个object
     addElement() {
 
-        let obj = this.state.obj;
-        obj.push({ task: '任务' + this.state.number, describe: '描述' + this.state.number, plan: 'todo' })
+        let objects = this.state.objects;
+        objects.push({ 
+            task: 'task' + this.state.number,
+            describe: 'describe' + this.state.number,
+            stage: 'todo' })
 
         this.setState({
-            obj: obj,
+            objects: objects,
             number: this.state.number + 1,
         })
     }
 
-    // 
+
+    // 设置为done
     doneAll() {
-        this.setState({ done: true })
+       this.setAllStage('done')
     }
 
-
-    changeObj = (cObj?: [], cDone?: boolean) => {
-        if (cObj !== undefined) this.setState({ obj: cObj })
-        if (cDone !== undefined) this.setState({ done: cDone })
+    // 设置所有 objects.stage  ：  all done , all todo , all doing ;
+    setAllStage(changeStage : string) {
+        let objects = this.objectsClone()
+        objects.map(p=>{
+            p.stage = changeStage
+        })
+        this.setState({objects:objects})
     }
+
+    // 修改 某个 task 的 stage值
+    setStage = (task: string,  changeStage: string) => {
+        let objects = this.objectsClone();
+        objects.map(p=>{
+            if(p.task === task) p.stage = changeStage
+        })
+        this.setState({objects:objects})
+    }
+
+    // delete all objects 删除所有对象
+    delAllObjects() {
+        this.setState({objects:[]});
+    }
+
+    // delete task  object  删除某个 task 对象
+    delObject = (task: string) => {
+        let objects = this.objectsClone();
+        let changeObjects : {
+            task: string,
+            describe: string,
+            stage: string
+        }[] = []
+        objects.map(p=>{
+            if(p.task !== task)changeObjects.push(p)
+        })
+        this.setState({objects:changeObjects })
+    }
+
+    /**
+     * important  setState 方法对比的是 当前state  和参数的值;  如果将 state 赋值 则会影响更新  可以把 state  clone()一次 ;
+     * 
+     */
+
+    changeObj = (changeObjects: []) => {
+      this.setState({ objects: changeObjects })
+    }
+
 
     render() {
-        const list = this.state.obj;
-        const {obj} = this.state;
+        const item = this.state.objects;
+        const {objects} = this.state;
 
         return (
             <div>
                 <button onClick={this.addElement}> add </button>
                 <button onClick={this.doneAll}> done all </button>
-
                 <table>
                     <tbody>
                         {
-                            list.map((item) => {
+                            item.map((item) => {
                                 return (
-                                    <List
+                                    <Item
                                         key={item.task}
-                                        obj={item}
-                                        allObj={obj}
-                                        changeObj={this.changeObj}
+                                        object={item}
+                                        delObject={this.delObject}
+                                        setStage={this.setStage}
                                     />
                                 );
                             })
@@ -100,6 +155,6 @@ class Render extends React.Component<{}, itemData> {
 
 
 ReactDOM.render(
-    <Render />,
+    <List />,
     document.getElementById("example")
 );
