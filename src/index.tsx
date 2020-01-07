@@ -1,6 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+// import { ButtonComponents } from './components/Button';
+import { Add } from './components/Add';
+import { DoneAll } from './components/DoneAll';
 import { Item } from './components/Item';
 
 interface itemData {
@@ -17,8 +20,6 @@ class List extends React.Component<{}, itemData> {
     constructor(props: {}) {
         super(props);
         this.state = { objects: [{ task: 'task0', describe: 'describe0', stage: 'todo' }], number: 1 }
-        this.addElement = this.addElement.bind(this)
-        this.doneAll = this.doneAll.bind(this)
     }
 
     // 挂载完成
@@ -39,15 +40,33 @@ class List extends React.Component<{}, itemData> {
 
     // 克隆当前 objects
     objectsClone() {
-        const allObj = this.state.objects
-        let changeObj:{task: string, describe: string,stage:string}[] = [];
-        for (let i=0; i< allObj.length; i++){
-            changeObj[i] ={
-                task: allObj[i].task, 
-                describe:allObj[i].describe,
-                stage: allObj[i].stage}
-        }
-        return changeObj;
+
+        return this.state.objects.slice();
+
+        // const [...objects] = this.state.objects
+        // return objects
+
+        // let objects:{        
+        //     task: string,
+        //     describe: string,
+        //     stage: string,}[] = []
+        // this.state.objects.forEach(child =>{
+        //     objects.push(child)
+        // })
+        // return objects
+
+        // let objects:{        
+        //     task: string,
+        //     describe: string,
+        //     stage: string,}[] = []
+        // this.state.objects.forEach(child =>{
+        //     objects.push({
+        //         task:child.task,
+        //         describe: child.describe,
+        //         stage: child.stage,
+        //     })
+        // })
+        // return objects
     }
 
     // 更新完成
@@ -56,13 +75,14 @@ class List extends React.Component<{}, itemData> {
     }
 
     // 增加一个object
-    addElement() {
+    addElement = () => {
 
         let objects = this.state.objects;
-        objects.push({ 
+        objects.push({
             task: 'task' + this.state.number,
             describe: 'describe' + this.state.number,
-            stage: 'todo' })
+            stage: 'todo'
+        })
 
         this.setState({
             objects: objects,
@@ -72,45 +92,43 @@ class List extends React.Component<{}, itemData> {
 
 
     // 设置为done
-    doneAll() {
-       this.setAllStage('done')
+    doneAll = () => {
+        this.setAllStage('done')
     }
 
     // 设置所有 objects.stage  ：  all done , all todo , all doing ;
-    setAllStage(changeStage : string) {
+    setAllStage = (changeStage: string) => {
         let objects = this.objectsClone()
-        objects.map(p=>{
+        objects.map(p => {
             p.stage = changeStage
         })
-        this.setState({objects:objects})
+        console.log(this.state.objects)
+        console.log(objects)
+
+        this.setState({ objects: objects })
     }
 
     // 修改 某个 task 的 stage值
-    setStage = (task: string,  changeStage: string) => {
+    setStage = (task: string, changeStage: string) => {
         let objects = this.objectsClone();
-        objects.map(p=>{
-            if(p.task === task) p.stage = changeStage
+        objects.map(p => {
+            if (p.task === task) p.stage = changeStage
         })
-        this.setState({objects:objects})
+        this.setState({ objects: objects })
     }
 
     // delete all objects 删除所有对象
     delAllObjects() {
-        this.setState({objects:[]});
+        this.setState({ objects: [] });
     }
 
     // delete task  object  删除某个 task 对象
     delObject = (task: string) => {
-        let objects = this.objectsClone();
-        let changeObjects : {
-            task: string,
-            describe: string,
-            stage: string
-        }[] = []
-        objects.map(p=>{
-            if(p.task !== task)changeObjects.push(p)
+        this.setState({
+            objects: this.state.objects.filter(p => {
+                return p.task !== task;
+            })
         })
-        this.setState({objects:changeObjects })
     }
 
     /**
@@ -119,19 +137,23 @@ class List extends React.Component<{}, itemData> {
      */
 
     changeObj = (changeObjects: []) => {
-      this.setState({ objects: changeObjects })
+        this.setState({ objects: changeObjects })
     }
 
 
     render() {
         const item = this.state.objects;
-        const {objects} = this.state;
+        const { objects } = this.state;
 
         return (
-            <div>
-                <button onClick={this.addElement}> add </button>
-                <button onClick={this.doneAll}> done all </button>
-                <table>
+            <div >
+                <Add
+                    onClick_add={this.addElement}
+                />
+                <DoneAll
+                    onClick_doneAll={this.doneAll}
+                />
+                <table style={{ border: '1px solid black' }}>
                     <tbody>
                         {
                             item.map((item) => {

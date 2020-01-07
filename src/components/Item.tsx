@@ -1,5 +1,10 @@
 import * as React from 'react';
 
+import { Delete } from './Delete';
+import { Doing } from './Doing';
+import { Done } from './Done';
+import { Todo } from './Todo';
+
 export interface ItemProps {
     object: {task: string, describe: string,stage : string};
     delObject:  (task: string)=>void;
@@ -15,7 +20,18 @@ export interface ItemProps {
    react & typescript : https://www.typescriptlang.org/docs/handbook/react-&-webpack.html
  * 
  */
-export class Item extends React.PureComponent<ItemProps, { stage: string}> {
+/**
+ * 关于 React.PureComponent  2020.1.7
+ * React.PureComponent 中的 shouldComponentUpdate() 仅作对象的浅层比较。
+ * 如果对象中包含复杂的数据结构，则有可能因为无法检查深层的差别，产生错误的比对结果。
+ * 仅在props 和 state 较为简单时，才使用 React.PureComponent，或者在深层数据结构发生变化时调用 forceUpdate() 来确保组件被正确地更新。
+ * 也可以考虑使用 immutable 对象加速嵌套数据的比较。
+ * 此外，React.PureComponent 中的 shouldComponentUpdate() 将跳过所有子组件树的 prop 更新。
+ * 因此，请确保所有子组件也都是“纯”的组件。   -- https://zh-hans.reactjs.org/docs/react-api.html#reactpurecomponent
+
+ * 
+ */
+export class Item extends React.Component<ItemProps, { stage: string}> {
     constructor(props: Readonly<ItemProps>) {
         super(props);
         /**
@@ -109,17 +125,44 @@ export class Item extends React.PureComponent<ItemProps, { stage: string}> {
      */
     render() {
 
+        const {object, delObject,setStage} = this.props;
+        const {task} = object
+     
             return (
                 <tr>
                     <td>{this.props.object.task}</td>
                     <td>{this.props.object.describe}</td>
                     <td>{this.props.object.stage}</td>
-                    <td>
+                    {/* <td>
                         <button onClick={this.setStage} value="done" >done</button>
                         <button onClick={this.setStage} value="doing" >doing</button>
                         <button onClick={this.setStage} value="todo" >todo</button>
                         <button onClick={this.handleChange} >delete</button>
+                    </td> */}
+                    <td>
+                        <Done
+                            onClick_setDone={setStage}
+                            task={task}
+                        />       
                     </td>
+                    <td>
+                        <Doing
+                            onClick_setDoing={setStage}
+                            task={task}
+                        />
+                    </td>
+                    <td>
+                        <Todo
+                            onClick_setTodo={setStage}
+                            task={task}
+                        />
+                    </td>
+                    <td>
+                        <Delete
+                            onClick_delete={delObject}
+                            task={task}
+                        />  
+                    </td>               
                 </tr>
             );
      
