@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --inline --hot --open --port 1234",
+    "dev": "webpack-dev-server --inline --hot --open --port 1111",
     "build": "npx webpack"
   },
   "author": "",

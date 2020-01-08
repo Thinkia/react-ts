@@ -13,16 +13,10 @@ module.exports = {
     },
 
     devServer: {
-        contentBase: './dist',
+
         hot: true
       },
-    plugins: [
-      new CleanWebpackPlugin(['dist']),
-      new HtmlWebpackPlugin({
-        title: '模块热替换'
-      }),
-      new webpack.HotModuleReplacementPlugin()
-    ],
+
 
     module: {
         rules: [
