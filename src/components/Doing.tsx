@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 import { IItem } from '../index';
 import { setDoing } from '../redux/action';
-import { IState } from '../redux/reducers/todos';
 
 interface StateProps {}
 interface DispatchProps {
@@ -14,7 +13,7 @@ interface OwnProps {
 }
 
 type Props = StateProps & DispatchProps & OwnProps
-
+ 
 class Doing extends React.Component<Props> {
  
     render() {
@@ -28,7 +27,7 @@ class Doing extends React.Component<Props> {
 const mapDispatchToPROPS = (dispatch:Function,ownProps:OwnProps) =>{
         return {
             onClick : ()=>{
-                dispatch(setDoing(ownProps.item.task))
+                dispatch(setDoing(ownProps.item.task)) 
             }
         }
 }

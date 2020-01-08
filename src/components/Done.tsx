@@ -16,7 +16,7 @@ interface OwnProps {
 
 type Props = StateProps & DispatchProps & OwnProps
 
-class Done extends React.Component<Props> {
+class Done extends React.Component<Props> { 
     render() {
         return (
             <button onClick={this.props.onClick}>done</button>

@@ -17,7 +17,7 @@ type Props = DispatchProps & OwnProps
 class Delete extends React.Component<Props> {
     render() {
         return (         
-            <button onClick={this.props.onClick}> delete </button>
+            <button onClick={this.props.onClick}>delete</button>
             )
     }
 }
