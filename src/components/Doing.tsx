@@ -1,23 +1,39 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 
-export interface ButtonProps {
-    onClick_setDoing:  (task:string,stage:string)=>void;
-    task: string;
+import { IItem } from '../index';
+import { setDoing } from '../redux/action';
+import { IState } from '../redux/reducers/todos';
+
+interface StateProps {}
+interface DispatchProps {
+    onClick: () => void;
+}
+interface OwnProps {
+    item: IItem;
 }
 
-export class Doing extends React.PureComponent<ButtonProps, { stage: string}> {
-    constructor(props: Readonly<ButtonProps>) {
-        super(props);
-    }
+type Props = StateProps & DispatchProps & OwnProps
 
-    onClick_setDoing =() => {
-        this.props.onClick_setDoing(this.props.task,'doing');
-    }
-
+class Doing extends React.Component<Props> {
+ 
     render() {
         return (         
-            <button onClick={this.onClick_setDoing}> doing </button>
+            <button onClick={this.props.onClick}>doing</button>
             )
     }
-
+ 
 }
+
+const mapDispatchToPROPS = (dispatch:Function,ownProps:OwnProps) =>{
+        return {
+            onClick : ()=>{
+                dispatch(setDoing(ownProps.item.task))
+            }
+        }
+}
+
+export default connect<StateProps,DispatchProps>(
+    null,
+    mapDispatchToPROPS
+)(Doing)

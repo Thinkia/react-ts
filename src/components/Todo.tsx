@@ -1,24 +1,38 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 
-export interface ButtonProps {
-    onClick_setTodo:  (task:string,stage:string)=>void;
-    task: string;
+import { IItem } from '../';
+import { setTodo } from '../redux/action';
+
+interface StateProps {}
+
+interface DispatchProps{
+    onClick: ()=> void;
 }
 
-export class Todo extends React.PureComponent<ButtonProps, { stage: string}> {
-    constructor(props: Readonly<ButtonProps>) {
-        super(props);
-        
-    }
+interface OwnProps {
+    item: IItem
+}
 
-    onClick_setTodo = () => {
-        this.props.onClick_setTodo(this.props.task,'todo');
-    }
-
+type Props = StateProps & DispatchProps & OwnProps;
+class Todo extends React.Component<Props, { stage: string}> {
     render() {
         return (         
-            <button onClick={this.onClick_setTodo}> todo </button>
+            <button onClick={this.props.onClick}> todo </button>
             )
     }
 
 }
+
+const mapDispatchProps = (dispatch:Function,ownProps : OwnProps)=>{
+    return {
+        onClick: () =>{
+            dispatch(setTodo(ownProps.item.task))
+        }
+    }
+}
+
+export default connect(
+    null,
+    mapDispatchProps
+)(Todo)

@@ -1,24 +1,34 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 
-export interface ButtonProps {
-    onClick_add:  ()=>void;
+import { addItem } from '../redux/action';
+
+interface IStateProps {}
+interface IDispatchProps {
+    onClick: () => void;
 }
+interface IOwnProps {}
 
-export class Add extends React.PureComponent<ButtonProps, { stage: string}> {
-    constructor(props: Readonly<ButtonProps>) {
-        super(props);
-        
-        // this.actionFunction = this.actionFunction.bind(this);
-    }
-
-    onClick_Add= () => {
-        this.props.onClick_add();
-    }
+type Props = IStateProps & IDispatchProps & IOwnProps
+class Add extends React.Component<Props> {
 
     render() {
         return (         
-            <button onClick={this.onClick_Add}> add </button>
+            <button onClick={this.props.onClick}> add </button>
             )
     }
 
 }
+
+const mapDispatchToPROPS = (dispatch:Function) =>{
+    return {
+        onClick : ()=>{ 
+            dispatch(addItem())
+        }
+    }
+}
+
+export default connect(
+    null,
+    mapDispatchToPROPS
+)(Add)

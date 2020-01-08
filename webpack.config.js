@@ -1,11 +1,28 @@
+const path = require('path')
+const webpack = require('webpack')
+const htmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
-    mode: "production",
+    mode: 'development',
+
+    entry: './src/index.tsx',
 
     devtool: "source-map",
 
     resolve: {
-        extensions: [".ts", ".tsx"]
+        extensions: [".ts", ".tsx",'.js']
     },
+
+    devServer: {
+        contentBase: './dist',
+        hot: true
+      },
+    plugins: [
+      new CleanWebpackPlugin(['dist']),
+      new HtmlWebpackPlugin({
+        title: '模块热替换'
+      }),
+      new webpack.HotModuleReplacementPlugin()
+    ],
 
     module: {
         rules: [

@@ -1,24 +1,40 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 
-export interface ButtonProps {
-    onClick_delete:  (task:string)=>void;
-    task: string;
+import { IItem } from '../index';
+import { deleteItem } from '../redux/action';
+import { IState } from '../redux/reducers/todos';
+
+interface StateProps {}
+interface OwnProps{
+    item: IItem
+}
+interface DispatchProps{
+    onClick: ()=>void;
 }
 
-export class Delete extends React.PureComponent<ButtonProps, { stage: string}> {
-    constructor(props: Readonly<ButtonProps>) {
-        super(props);
-        
-    }
-
-    onClick_delete = () => {
-        this.props.onClick_delete(this.props.task);
-    }
-
+type Props = DispatchProps & OwnProps
+class Delete extends React.Component<Props> {
     render() {
         return (         
-            <button onClick={this.onClick_delete}> delete </button>
+            <button onClick={this.props.onClick}> delete </button>
             )
     }
-
 }
+
+const mapStateToProps = (state:IState) =>{
+    return state.objects
+}
+
+const mapDispatchToProps = (dispatch:Function,ownProps:OwnProps)=>{
+        return {
+            onClick: ()=>{
+                dispatch(deleteItem(ownProps.item.task))
+            }
+        }
+}
+
+export default connect<StateProps,DispatchProps,OwnProps>(
+    null,
+    mapDispatchToProps
+)(Delete)

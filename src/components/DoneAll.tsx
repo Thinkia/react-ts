@@ -1,23 +1,32 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 
-export interface ButtonProps {
-    onClick_doneAll:  ()=>void;
+import { doneAll } from '../redux/action';
+
+interface DispatchProps {
+    onClick: () => void;
 }
 
-export class DoneAll extends React.PureComponent<ButtonProps, { stage: string}> {
-    constructor(props: Readonly<ButtonProps>) {
-        super(props);
-        
-    }
 
-    onClick_DoneAll = () => {
-        this.props.onClick_doneAll();
-    }
-
+type Props =  DispatchProps 
+class DoneAll extends React.PureComponent<Props> {
     render() {
         return (         
-            <button onClick={this.onClick_DoneAll}> done all </button>
+            <button onClick={this.props.onClick}> done all </button>
             )
     }
 
 }
+
+const mapDispatchToProps = (dispatch:Function) =>{
+    return {
+        onClick:() =>{
+            dispatch(doneAll())
+        }
+    }
+}
+
+export default connect<null,DispatchProps>(
+    null,
+    mapDispatchToProps
+)(DoneAll)
