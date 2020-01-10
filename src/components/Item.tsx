@@ -24,7 +24,7 @@ export interface ItemProps {
                            item={item}
                         />  
                     </td>
-                     <td>
+                    <td>
                         <Doing
                             item={item}
                         />

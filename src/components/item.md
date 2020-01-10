@@ -81,8 +81,6 @@ export interface ItemProps {
     // 更新完成
     componentDidUpdate(_prevProps: ItemProps, _prevState: {}, _snapshot: any) {
         console.log('componentDidUpdate:  更新完成')
-    
-     
     }
 
     //卸载阶段 即将卸载

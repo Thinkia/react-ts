@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import { addItem } from '../redux/action';
+import { addDoneAsync, addItem, doneAll } from '../redux/action';
 
 interface IStateProps {}
 interface IDispatchProps {
@@ -20,10 +20,14 @@ class Add extends React.Component<Props> {
 
 }
 
+// 异步测试
 const mapDispatchToPROPS = (dispatch:Function) =>{
     return {
         onClick : ()=>{ 
-            dispatch(addItem())
+           setTimeout(()=>{ 
+                dispatch(addItem())
+                dispatch(doneAll())
+            },2000)
         }
     }
 }

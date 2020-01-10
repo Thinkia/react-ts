@@ -18,7 +18,7 @@ type Props = StateProps & DispatchProps & OwnProps;
 class Todo extends React.Component<Props, { stage: string}> {
     render() {
         return (         
-            <button onClick={this.props.onClick}> todo </button>
+            <button onClick={this.props.onClick}>todo</button>
             )
     }
 
@@ -32,7 +32,7 @@ const mapDispatchProps = (dispatch:Function,ownProps : OwnProps)=>{
     }
 }
 
-export default connect(
+export default connect<StateProps,DispatchProps,OwnProps>(
     null,
     mapDispatchProps
 )(Todo)
